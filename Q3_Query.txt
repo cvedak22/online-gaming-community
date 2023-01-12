@@ -1,0 +1,27 @@
+SELECT DISTINCT USER.username                                AS poster,
+                USER.address__geo__lat                       AS poster_latitude,
+                USER.address__geo__lng                       AS poster_longitude
+                ,
+                sq.username                                  AS
+                commenter,
+St_distance_sphere(Point(USER.address__geo__lng, USER.address__geo__lat), Point(
+sq.address__geo__lng, sq.address__geo__lat)) AS distance_btwn_poster_commenter
+FROM   programming_assignment_db.post_comments pc
+       JOIN (SELECT iq.email,
+                    u.username,
+                    u.address__geo__lat,
+                    u.address__geo__lng,
+                    total_post
+             FROM   (SELECT email,
+                            Count(DISTINCT postid) AS total_post
+                     FROM   programming_assignment_db.post_comments
+                     GROUP  BY email
+                     HAVING Count(DISTINCT postid) >= 3) AS iq
+                    LEFT JOIN programming_assignment_db.users u
+                           ON u.email = iq.email
+             WHERE  u.id IS NOT NULL) sq
+         ON pc.email = sq.email
+       JOIN programming_assignment_db.posts p
+         ON p.id = pc.postid
+       JOIN programming_assignment_db.users USER
+         ON USER.id = p.userid; 
