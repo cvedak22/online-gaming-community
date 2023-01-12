@@ -1,7 +1,7 @@
 # online-gaming-community technologies used:
 Python Scripting 
 
-JAVA to create API endpoint
+JAVA Spring Boot to create API endpoint
 
 MySQL - Database
 
